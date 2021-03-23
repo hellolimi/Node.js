@@ -2,43 +2,68 @@ var http = require('http');
 var fs = require('fs');
 var url = require('url');
 
+templateHTML = (title, list, body) =>{
+  return `
+  <!doctype html>
+  <html>
+  <head>
+    <title>WEB1 - ${title}</title>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <h1><a href="/">WEB</a></h1>
+    ${list}
+    ${body}
+  </body>
+  </html>
+  `;
+}
+templateList = (fileList) => {
+  var list = '<ul>';
+  for(var i=0;i<fileList.length;i++){
+    list += `<li><a href="/?id=${fileList[i]}">${fileList[i]}</a></li>`;
+  }
+  list += '</ul>';
+  return list;
+}
+
 var app = http.createServer(function(request,response){
     var _url = request.url;
     var queryData = url.parse(_url, true).query;
+    var pathname = url.parse(_url, true).pathname;
     var title = queryData.id;
-    if(_url == '/favicon.ico'){
-        response.writeHead(404);
-        response.end();
-        return;
-    }
-    response.writeHead(200);
-    fs.readFile(`data/${title}`, 'utf-8', (err, description) => {
-      if(_url == '/'){
-        title = 'WELCOME';
-        description = 'WELCOME TO OUR WEBSITE!';
-      }
-      var template = `
-      <!doctype html>
-      <html>
-      <head>
-        <title>WEB1 - ${title}</title>
-        <meta charset="utf-8">
-      </head>
-      <body>
-        <h1><a href="/">WEB</a></h1>
-        <ol>
-          <li><a href="/?id=HTML">HTML</a></li>
-          <li><a href="/?id=CSS">CSS</a></li>
-          <li><a href="/?id=JavaScript">JavaScript</a></li>
-        </ol>
-        <h2>${title}</h2>
-        <p>${description}</p>
-      </body>
-      </html>
-      `;
-      response.end(template);
+    var description;
 
-    });
+    /* fs.readFile(`data/${title}`, 'utf-8', (err, description) => {
+      
+        fs.readdir(`./data/${title}`, (err, fileList) => {
+          response.writeHead(200);
+          response.end(templateHTML(title, templateList(fileList), body));
+        });
+      } */
+    if(pathname == '/'){
+      fs.readFile(`./data/${title}`, 'utf-8', (err, data) => {
+        if(title == undefined){
+          description =`
+          <h2>WELOCME</h2>
+          <p>Hello, Node.js</p>
+          `;
+        }else{
+          description = `
+          <h2>${title}</h2>
+          <p>${data}</p>
+          `;
+        }
+        fs.readdir('./data', (err, fileList) => {
+          response.writeHead(200);
+          response.end(templateHTML(title, templateList(fileList), description));
+        });
+      });
+      
+    }else{
+      response.writeHead(404);
+      response.end('Not Found');
+    } 
 
 });
 app.listen(3000);
