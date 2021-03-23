@@ -1,6 +1,7 @@
 var http = require('http');
 var fs = require('fs');
 var url = require('url');
+var qs = require('querystring');
 
 templateHTML = (title, list, body) =>{
   return `
@@ -13,6 +14,7 @@ templateHTML = (title, list, body) =>{
   <body>
     <h1><a href="/">WEB</a></h1>
     ${list}
+    <a href="/create">Creat a list</a>
     ${body}
   </body>
   </html>
@@ -53,6 +55,37 @@ var app = http.createServer(function(request,response){
         });
       });
       
+    }else if(pathname == '/create'){
+      title = 'WEB - create a list';
+      description = `
+        <br><br>
+        <form action="http://localhost:3000/create_process" method="post" name="newList">
+          <label for="title">Title</label><br>
+          <input type="text" name="title" id="title"><br><br>
+          <label for="description">Description</label><br>
+          <textarea name="description"></textarea><br><br>
+          <button type="submit">Submit</button>
+        </form>
+      `;
+      fs.readdir('./data', (err, fileList) => {
+        response.writeHead(200);
+        response.end(templateHTML(title, templateList(fileList), description));
+      });
+    }else if(pathname == '/create_process'){
+      var body = '';
+      request.on('data', (data) => {
+        body += data;
+      });
+      request.on('end', () => {
+        var post = qs.parse(body);
+        var title = post.title;
+        var description = post.description;
+
+        fs.writeFile(`data/${title}`, description, 'utf-8', ()=> {
+          response.writeHead(302, {Location:`/?id=${title}`});
+          response.end();
+        });
+      });
     }else{
       response.writeHead(404);
       response.end('Not Found');
