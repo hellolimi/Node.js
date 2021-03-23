@@ -34,13 +34,6 @@ var app = http.createServer(function(request,response){
     var title = queryData.id;
     var description;
 
-    /* fs.readFile(`data/${title}`, 'utf-8', (err, description) => {
-      
-        fs.readdir(`./data/${title}`, (err, fileList) => {
-          response.writeHead(200);
-          response.end(templateHTML(title, templateList(fileList), body));
-        });
-      } */
     if(pathname == '/'){
       fs.readFile(`./data/${title}`, 'utf-8', (err, data) => {
         if(title == undefined){
