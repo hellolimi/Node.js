@@ -13,3 +13,4 @@
 
     - to update the exsiting lists
     - to delete the existing lists
+    - to modularize Object 'template'

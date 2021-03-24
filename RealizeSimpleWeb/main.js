@@ -2,32 +2,7 @@ var http = require('http');
 var fs = require('fs');
 var url = require('url');
 var qs = require('querystring');
-
-templateHTML = (title, list, body, button) =>{
-  return `
-  <!doctype html>
-  <html>
-  <head>
-    <title>WEB1 - ${title}</title>
-    <meta charset="utf-8">
-  </head>
-  <body>
-    <h1><a href="/">WEB</a></h1>
-    ${list}
-    ${button}
-    ${body}
-  </body>
-  </html>
-  `;
-}
-templateList = (fileList) => {
-  var list = '<ul>';
-  for(var i=0;i<fileList.length;i++){
-    list += `<li><a href="/?id=${fileList[i]}">${fileList[i]}</a></li>`;
-  }
-  list += '</ul>';
-  return list;
-}
+var template = require('./lib/template.js');
 
 var app = http.createServer(function(request,response){
     var _url = request.url;
@@ -61,8 +36,10 @@ var app = http.createServer(function(request,response){
           `;
         }
         fs.readdir('./data', (err, fileList) => {
+          var list = template.list(fileList);
+          var html = template.html(title, list, description, button);
           response.writeHead(200);
-          response.end(templateHTML(title, templateList(fileList), description, button));
+          response.end(html);
         });
       });
       
@@ -80,8 +57,10 @@ var app = http.createServer(function(request,response){
       `;
       button = '';
       fs.readdir('./data', (err, fileList) => {
+        var list = template.list(fileList);
+        var html = template.html(title, list, description, button);
         response.writeHead(200);
-        response.end(templateHTML(title, templateList(fileList), description, button));
+        response.end(html);
       });
     }else if(pathname == '/create_process'){
       var body = '';
@@ -113,8 +92,10 @@ var app = http.createServer(function(request,response){
         `;
         button = '';
         fs.readdir('./data', (err, fileList) => {
-          response.writeHead(200);
-          response.end(templateHTML(title, templateList(fileList), description, button));
+        var list = template.list(fileList);
+        var html = template.html(title, list, description, button);
+        response.writeHead(200);
+        response.end(html);
         });
       });
     }else if(pathname == '/update_process'){
