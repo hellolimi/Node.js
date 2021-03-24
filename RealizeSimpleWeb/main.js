@@ -3,7 +3,7 @@ var fs = require('fs');
 var url = require('url');
 var qs = require('querystring');
 
-templateHTML = (title, list, body) =>{
+templateHTML = (title, list, body, button) =>{
   return `
   <!doctype html>
   <html>
@@ -14,7 +14,7 @@ templateHTML = (title, list, body) =>{
   <body>
     <h1><a href="/">WEB</a></h1>
     ${list}
-    <a href="/create">Creat a list</a>
+    ${button}
     ${body}
   </body>
   </html>
@@ -43,15 +43,22 @@ var app = http.createServer(function(request,response){
           <h2>WELOCME</h2>
           <p>Hello, Node.js</p>
           `;
+          button = `
+          <a href="/create">Creat a list</a>
+          `;
         }else{
           description = `
           <h2>${title}</h2>
           <p>${data}</p>
           `;
+          button = `
+          <a href="/create">Creat a list</a>
+          <a href="/update/?id=${title}">Update this list</a>
+          `;
         }
         fs.readdir('./data', (err, fileList) => {
           response.writeHead(200);
-          response.end(templateHTML(title, templateList(fileList), description));
+          response.end(templateHTML(title, templateList(fileList), description, button));
         });
       });
       
@@ -67,9 +74,10 @@ var app = http.createServer(function(request,response){
           <button type="submit">Submit</button>
         </form>
       `;
+      button = '';
       fs.readdir('./data', (err, fileList) => {
         response.writeHead(200);
-        response.end(templateHTML(title, templateList(fileList), description));
+        response.end(templateHTML(title, templateList(fileList), description, button));
       });
     }else if(pathname == '/create_process'){
       var body = '';
