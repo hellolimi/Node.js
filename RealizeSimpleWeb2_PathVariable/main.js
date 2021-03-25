@@ -37,5 +37,9 @@ app.get('/:pageId', (req, res) => {
     });
 });
 
+app.get('/create', (req, res) => {
+    
+});
+
 
 app.listen(3000);
