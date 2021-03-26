@@ -24,8 +24,18 @@ module.exports = {
     list : (filelist) => {
         let li = ``;
         for(var i in filelist){
-            li += `<li><a href="/${filelist[i]}">${filelist[i]}</a></li>`;
+            li += `<li><a href="/page/${filelist[i]}">${filelist[i]}</a></li>`;
         };
         return li;
+    },
+    controls : (title) => {
+        return `
+        <a href="/add">Add</a>
+        <a href="/update/${title}">Update</a>
+        <form action="/delete" method="post">
+            <input type="hidden" value="${title}" name="id"/> 
+            <button>Delete</button> 
+        </form>
+        `;
     }
 }
