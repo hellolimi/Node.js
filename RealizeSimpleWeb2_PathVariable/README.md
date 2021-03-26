@@ -11,4 +11,4 @@
     - for users to be able to creat a list
     - to update the exsiting lists
     - to delete the existing lists
-    
+    - to use middleware 'bodyParser' & write middleware to remove repeatable codes
