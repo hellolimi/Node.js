@@ -6,17 +6,23 @@ const bodyParser = require('body-parser');
 const template = require('./lib/template.js');
 
 app.use(bodyParser.urlencoded({ extended:false }));
+app.use(express.static('public'));
 
 app.get('*', (req, res, next) => {
     fs.readdir('./data', (err, filelist) => {
         req.list = filelist;
+        next();
     });
 });
 
 app.get('/', (req, res) => {
         var title = 'WELCOME';
-        var contents = 'Find out about splendid cpital cities around the world!';
-        var controls = `<a href="/add">Add a City</a>`;
+        var contents = `
+            <h3>${title}</h3>
+            <img src="/images/${title}.jpg" alt="${title} image" width="300">
+            <p>Find out about splendid capital cities around the world!</p>
+        `;
+        var controls = `<a href="/add">Add</a>`;
 
         var list = template.list(req.list);
         var html = template.html(title, list, controls, contents);
@@ -27,7 +33,11 @@ app.get('/page/:pageId', (req, res) => {
     var title = req.params.pageId;
     var list = template.list(req.list);
     var controls = template.controls(title);
-    fs.readFile(`./data/${title}`, 'utf-8', (err, contents) => {
+    fs.readFile(`./data/${title}`, 'utf-8', (err, data) => {
+        var contents = `
+            <h3>${title}</h3>
+            <p>${data}</p>
+        `;
         var html = template.html(title, list, controls, contents);
         res.send(html);
     }); 

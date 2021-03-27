@@ -12,3 +12,7 @@
     - to update the exsiting lists
     - to delete the existing lists
     - to use middleware 'bodyParser' & write middleware to remove repeatable codes
+
+**27/03/2021**
+
+    - to use static files in nodejs (an image here)
