@@ -29,17 +29,21 @@ app.get('/', (req, res) => {
         res.send(html);
 });
 
-app.get('/page/:pageId', (req, res) => {
+app.get('/page/:pageId', (req, res, next) => {
     var title = req.params.pageId;
     var list = template.list(req.list);
     var controls = template.controls(title);
     fs.readFile(`./data/${title}`, 'utf-8', (err, data) => {
-        var contents = `
+        if(err){
+            next(err);
+        }else{
+            var contents = `
             <h3>${title}</h3>
             <p>${data}</p>
         `;
         var html = template.html(title, list, controls, contents);
         res.send(html);
+        }
     }); 
 });
 
@@ -75,18 +79,22 @@ app.get('/update/:pageId', (req, res) => {
     var list = template.list(req.list);
     var controls = '';
     fs.readFile(`./data/${id}`, 'utf-8', (err, data) => {
-        var contents = `
-        <form action="/update" name="adding" method="post">
-            <input type="hidden" name="id" value="${id}">
-            <label for="title">Title</label><br><br>
-            <input type="text" name="title" id="title" value="${id}"/><br><br>
-            <label for="description">Description</label><br><br>
-            <textarea name="description" id="description">${data}</textarea><br><br>
-            <button type="submit">Add this city!</button>
-        </form>
-    `;
-    var html = template.html('Update', list, controls, contents);
-    res.send(html);
+        if(err){
+            next(err);
+        }else{
+            var contents = `
+            <form action="/update" name="adding" method="post">
+                <input type="hidden" name="id" value="${id}">
+                <label for="title">Title</label><br><br>
+                <input type="text" name="title" id="title" value="${id}"/><br><br>
+                <label for="description">Description</label><br><br>
+                <textarea name="description" id="description">${data}</textarea><br><br>
+                <button type="submit">Add this city!</button>
+            </form>
+            `;
+            var html = template.html('Update', list, controls, contents);
+            res.send(html);
+        }
     });
 });
 
@@ -108,6 +116,15 @@ app.post('/delete', (req, res) => {
     fs.unlink(`./data/${toDelete}`, (err) => {
         res.redirect(`/`);
     });
+});
+
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something is wrong!');
+});
+
+app.use((req, res, next) => {
+    res.status(404).send('Sorry, this page is not exisitng!');
 });
 
 app.listen(3000);

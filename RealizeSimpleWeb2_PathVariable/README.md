@@ -15,4 +15,6 @@
 
 **27/03/2021**
 
-    - to use static files in nodejs (an image here)
+    - to serve static files in nodejs (an image, here) [app.use(express.static('public'))]
+    - to handle '404', '500' errors
+  
